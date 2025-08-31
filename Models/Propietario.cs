@@ -24,6 +24,8 @@ namespace vertacnik_inmobiliaria2025.Models
         public string Telefono { get; set; }
         [Required(ErrorMessage = "El campo clave es obligatorio"), DataType(DataType.Password), MaxLength(15)]
         public string Clave { get; set; }
+        [Required(ErrorMessage = "El campo estado es obligatorio")]
+        public bool Estado { get; set; }
 
         public override string ToString()
         {

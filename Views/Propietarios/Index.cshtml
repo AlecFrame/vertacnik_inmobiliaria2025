@@ -1,0 +1,44 @@
+@model IEnumerable<vertacnik_inmobiliaria2025.Models.Propietario>
+
+@{
+    ViewData["Title"] = "Propietarios";
+}
+
+<h2>Propietarios</h2>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>DNI</th>
+            <th>Teléfono</th>
+            <th>Email</th>
+            <th>Estado</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Any())
+        {
+            foreach (var p in Model)
+            {
+                <tr>
+                    <td>@p.IdPropietario</td>
+                    <td>@p.Nombre</td>
+                    <td>@p.Apellido</td>
+                    <td>@p.Dni</td>
+                    <td>@p.Telefono</td>
+                    <td>@p.Email</td>
+                    <td>@(p.Estado ? "Sí" : "No")</td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="7" class="text-center">No hay propietarios registrados.</td>
+            </tr>
+        }
+    </tbody>
+</table>
