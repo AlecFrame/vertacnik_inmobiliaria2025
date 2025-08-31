@@ -16,6 +16,7 @@
             <th>Teléfono</th>
             <th>Email</th>
             <th>Estado</th>
+            <th>Acción</th>
         </tr>
     </thead>
     <tbody>
@@ -30,7 +31,11 @@
                     <td>@p.Dni</td>
                     <td>@p.Telefono</td>
                     <td>@p.Email</td>
-                    <td>@(p.Estado ? "Sí" : "No")</td>
+                    <td>@(p.Estado ? "Activo" : "Inactivo")</td>
+                    <td>
+                        <a href="javascript:void(0);" class="btn btn-sm btn-primary btn-editar-propietario" data-id="@p.IdPropietario">Editar</a>
+                        <a asp-controller="Propietarios" asp-action="Inactivar" asp-route-id="@p.IdPropietario" class="btn btn-sm btn-danger">Baja</a>
+                    </td>
                 </tr>
             }
         }
@@ -41,4 +46,66 @@
             </tr>
         }
     </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="8" class="text-end">
+                <a href="javascript:void(0);" id="btnCrearPropietario" class="btn btn-success">+</a>
+            </td>
+        </tr>
+    </tfoot>
 </table>
+
+<div class="modal fade" id="modalPropietario" tabindex="-1" aria-labelledby="modalPropietarioLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalPropietarioLabel">Propietario</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body" id="modalPropietarioBody">
+        <!-- Aquí se cargará el formulario -->
+      </div>
+    </div>
+  </div>
+</div>
+
+@section Scripts {
+<script>
+function abrirModalPropietario(url) {
+    $("#modalPropietarioBody").load(url, function () {
+        $("#modalPropietario").modal("show");
+        // Enlazar el submit del formulario por AJAX
+        $("#formPropietario").off("submit").on("submit", function (e) {
+            e.preventDefault();
+            var form = $(this);
+            $.ajax({
+                url: form.attr("action"),
+                type: form.attr("method"),
+                data: form.serialize(),
+                success: function (result) {
+                    // Si la respuesta contiene el formulario (error de validación), reemplaza el body
+                    if ($(result).find("form#formPropietario").length > 0) {
+                        $("#modalPropietarioBody").html(result);
+                    } else {
+                        // Si no, cierra el modal y recarga la tabla
+                        $("#modalPropietario").modal("hide");
+                        location.reload();
+                    }
+                }
+            });
+        });
+    });
+}
+
+// Para el botón de crear
+$(document).on("click", "#btnCrearPropietario", function () {
+    abrirModalPropietario('@Url.Action("Crear", "Propietarios")');
+});
+
+// Para los botones de editar
+$(document).on("click", ".btn-editar-propietario", function () {
+    var id = $(this).data("id");
+    abrirModalPropietario('@Url.Action("Editar", "Propietarios")/' + id);
+});
+</script>
+}
