@@ -33,8 +33,15 @@
                     <td>@p.Email</td>
                     <td>@(p.Estado ? "Activo" : "Inactivo")</td>
                     <td>
-                        <a href="javascript:void(0);" class="btn btn-sm btn-primary btn-editar-propietario" data-id="@p.IdPropietario">Editar</a>
-                        <a asp-controller="Propietarios" asp-action="Inactivar" asp-route-id="@p.IdPropietario" class="btn btn-sm btn-danger">Baja</a>
+                        @if (p.Estado)
+                        {
+                            <a href="javascript:void(0);" class="btn btn-sm btn-primary btn-editar-propietario" data-id="@p.IdPropietario">Editar</a>
+                            <a asp-controller="Propietarios" asp-action="Inactivar" asp-route-id="@p.IdPropietario" class="btn btn-sm btn-danger">Baja</a>
+                        }
+                        else
+                        {
+                            <a asp-controller="Propietarios" asp-action="Activar" asp-route-id="@p.IdPropietario" class="btn btn-sm btn-success">Alta</a>
+                        }
                     </td>
                 </tr>
             }
@@ -42,14 +49,14 @@
         else
         {
             <tr>
-                <td colspan="7" class="text-center">No hay propietarios registrados.</td>
+                <td colspan="8" class="text-center">No hay propietarios registrados.</td>
             </tr>
         }
     </tbody>
     <tfoot>
         <tr>
             <td colspan="8" class="text-end">
-                <a href="javascript:void(0);" id="btnCrearPropietario" class="btn btn-success">+</a>
+                <a href="javascript:void(0);" style="margin: 0 50%;" id="btnCrearPropietario" class="btn btn-success">+</a>
             </td>
         </tr>
     </tfoot>
@@ -74,6 +81,7 @@
 function abrirModalPropietario(url) {
     $("#modalPropietarioBody").load(url, function () {
         $("#modalPropietario").modal("show");
+        $.validator.unobtrusive.parse("#formPropietario");
         // Enlazar el submit del formulario por AJAX
         $("#formPropietario").off("submit").on("submit", function (e) {
             e.preventDefault();
@@ -84,8 +92,9 @@ function abrirModalPropietario(url) {
                 data: form.serialize(),
                 success: function (result) {
                     // Si la respuesta contiene el formulario (error de validación), reemplaza el body
-                    if ($(result).find("form#formPropietario").length > 0) {
+                    if ($(result).is("form#formPropietario") || $(result).find("form#formPropietario").length > 0) {
                         $("#modalPropietarioBody").html(result);
+                        $.validator.unobtrusive.parse("#formPropietario");
                     } else {
                         // Si no, cierra el modal y recarga la tabla
                         $("#modalPropietario").modal("hide");
@@ -108,4 +117,5 @@ $(document).on("click", ".btn-editar-propietario", function () {
     abrirModalPropietario('@Url.Action("Editar", "Propietarios")/' + id);
 });
 </script>
+<partial name="_ValidationScriptsPartial" />
 }

@@ -8,13 +8,13 @@ namespace vertacnik_inmobiliaria2025.Models
 {
     public class RepositorioBase
     {
-        protected readonly IConfiguration _configuration;
+        protected readonly IConfiguration _config;
         protected readonly string connectionString;
 
         public RepositorioBase(IConfiguration configuration)
         {
-            _configuration = configuration;
-            connectionString = _configuration.GetConnectionString("DefaultConnection");
+            _config = configuration;
+            connectionString = _config["ConnectionStrings:DefaultConnection"];
         }
     }
 }

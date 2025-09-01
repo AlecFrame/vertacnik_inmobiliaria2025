@@ -1,7 +1,10 @@
+using vertacnik_inmobiliaria2025.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddTransient<RepoPropietario>();
 
 var app = builder.Build();
 
