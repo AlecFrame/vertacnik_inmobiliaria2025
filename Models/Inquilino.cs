@@ -17,9 +17,10 @@ namespace vertacnik_inmobiliaria2025.Models
 		public string Apellido { get; set; }
 		[Required, MaxLength(10)]
 		public string Dni { get; set; }
-        [MaxLength(15)]
+		[MaxLength(15)]
 		public string Telefono { get; set; }
 		[Required, EmailAddress, MaxLength(128)]
 		public string Email { get; set; }
+		public bool Estado { get; set; }
 	}
 }

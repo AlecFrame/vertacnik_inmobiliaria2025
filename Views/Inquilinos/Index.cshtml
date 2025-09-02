@@ -1,0 +1,118 @@
+@model IEnumerable<vertacnik_inmobiliaria2025.Models.Inquilino>
+
+@{
+    ViewData["Title"] = "Inquilinos";
+}
+
+<h2>Inquilinos</h2>
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>DNI</th>
+            <th>Teléfono</th>
+            <th>Email</th>
+            <th>Estado</th>
+            <th>Acción</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Any())
+        {
+            foreach (var i in Model)
+            {
+                <tr>
+                    <td>@i.IdInquilino</td>
+                    <td>@i.Nombre</td>
+                    <td>@i.Apellido</td>
+                    <td>@i.Dni</td>
+                    <td>@i.Telefono</td>
+                    <td>@i.Email</td>
+                    <td>@(i.Estado ? "Activo" : "Inactivo")</td>
+                    <td>
+                        @if (i.Estado)
+                        {
+                            <a href="javascript:void(0);" class="btn btn-sm btn-primary btn-editar-inquilino" data-id="@i.IdInquilino">Editar</a>
+                            <a asp-controller="Inquilinos" asp-action="Inactivar" asp-route-id="@i.IdInquilino" class="btn btn-sm btn-danger">Baja</a>
+                        }
+                        else
+                        {
+                            <a asp-controller="Inquilinos" asp-action="Activar" asp-route-id="@i.IdInquilino" class="btn btn-sm btn-success">Alta</a>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="8" class="text-center">No hay inquilinos registrados.</td>
+            </tr>
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="8" class="text-end">
+                <a href="javascript:void(0);" style="margin: 0 50%;" id="btnCrearInquilino" class="btn btn-success">+</a>
+            </td>
+        </tr>
+    </tfoot>
+</table>
+
+<div class="modal fade" id="modalInquilino" tabindex="-1" aria-labelledby="modalInquilinoLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalInquilinoLabel">Formulario de Inquilino</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="contenidoModalInquilino">
+                    <!-- El contenido del formulario se cargará aquí mediante AJAX -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function abrirModalInquilino(url) {
+            $("#contenidoModalInquilino").load(url, function () {
+                var modal = new bootstrap.Modal(document.getElementById('modalInquilino'));
+                modal.show();
+                modal.off("submit").on("submit", "#formInquilino", function (e) {
+                    e.preventDefault();
+                    var form = $(this);
+                    $.ajax({
+                        type: form.attr('method'),
+                        url: form.attr('action'),
+                        data: form.serialize(),
+                        success: function (response) {
+                            if (response.success) {
+                                modal.hide();
+                                location.reload(); // Recargar la página para ver los cambios
+                            } else {
+                                $("#contenidoModalInquilino").html(response); // Mostrar errores de validación
+                            }
+                        }
+                    });
+                });
+            });
+        }
+
+        $(document).ready(function () {
+            $("#btnCrearInquilino").click(function () {
+                abrirModalInquilino('@Url.Action("Crear", "Inquilinos")');
+            });
+
+            $(".btn-editar-inquilino").click(function () {
+                var id = $(this).data("id");
+                abrirModalInquilino('@Url.Action("Editar", "Inquilinos")/' + id);
+            });
+        });
+
+    </script>
+}
